@@ -1,2 +1,1 @@
-def main() -> None:
-    print("Hello from murdle-solver!")
+from murdle_solver.main import solve
