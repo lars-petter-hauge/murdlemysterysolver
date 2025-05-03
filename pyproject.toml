@@ -7,7 +7,9 @@ authors = [
     { name = "Lars Petter Hauge", email = "larsenhauge@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pre-commit>=4.2.0",
+]
 
 [project.scripts]
 murdle-solver = "murdle_solver:main"
