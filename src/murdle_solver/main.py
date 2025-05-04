@@ -32,7 +32,16 @@ def _options_with_common_set_owner(combinations):
         single_owner_options = [
             opt for opt in options if any(opt in t for t in single_owner_options_type)
         ]
-        yield single_owner_options, topic_owner
+        if single_owner_options:
+            yield single_owner_options, topic_owner
+
+
+def _fix_mutually_exclusive_options(combinations):
+    possible_options = _options_with_common_set_owner(combinations)
+    possible_options = [(t, o) for (t, o) in possible_options if len(t) > 1]
+    for opts, _ in possible_options:
+        for x, y in permutations(opts):
+            _remove_other_topics_at_owner(combinations, topic=x, option=y)
 
 
 def solver(combinations):
@@ -66,22 +75,23 @@ def solver(combinations):
                     )
         # For any options where there is at least two common owners, we can set them as mutually exclusive
         pprint.pp(combinations)
-        something = _options_with_common_set_owner(combinations)
-        something = [(t, o) for (t, o) in something if len(t) > 1]
-        for opts, _ in something:
-            for x, y in permutations(opts):
-                _remove_other_topics_at_owner(combinations, topic=x, option=y)
+        _fix_mutually_exclusive_options(combinations)
 
         pprint.pp(combinations)
         n_values = sum([len(val) for val in combinations.values()])
         i += 1
 
 
-def solve(topics: list[StrEnum], facts: list[dict[StrEnum, list[StrEnum]]]) -> Any:
+def _create_combinations(topics):
     combinations = {}
     for topic in topics:
         for option in topic:
             combinations[option] = list(flatten([t for t in topics if t != topic]))
+    return combinations
+
+
+def solve(topics: list[StrEnum], facts: list[dict[StrEnum, list[StrEnum]]]) -> Any:
+    combinations = _create_combinations(topics)
 
     print("Solving for:")
     pprint.pp(combinations)
