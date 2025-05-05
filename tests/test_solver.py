@@ -19,44 +19,16 @@ def test_create_combinations():
     # and all options from all other topics as suboptions
     combinations = _create_combinations([Suspects, Weapons, Locations])
 
+    # fmt: off
     assert combinations == {
-        Suspects.MARIO: [
-            Weapons.GO_CART,
-            Weapons.MUSHROOM,
-            Locations.CASTLE,
-            Locations.TRACK,
-        ],
-        Suspects.LUIGI: [
-            Weapons.GO_CART,
-            Weapons.MUSHROOM,
-            Locations.CASTLE,
-            Locations.TRACK,
-        ],
-        Weapons.GO_CART: [
-            Suspects.MARIO,
-            Suspects.LUIGI,
-            Locations.CASTLE,
-            Locations.TRACK,
-        ],
-        Weapons.MUSHROOM: [
-            Suspects.MARIO,
-            Suspects.LUIGI,
-            Locations.CASTLE,
-            Locations.TRACK,
-        ],
-        Locations.CASTLE: [
-            Suspects.MARIO,
-            Suspects.LUIGI,
-            Weapons.GO_CART,
-            Weapons.MUSHROOM,
-        ],
-        Locations.TRACK: [
-            Suspects.MARIO,
-            Suspects.LUIGI,
-            Weapons.GO_CART,
-            Weapons.MUSHROOM,
-        ],
+        Suspects.MARIO: [Weapons.GO_CART, Weapons.MUSHROOM, Locations.CASTLE, Locations.TRACK],
+        Suspects.LUIGI: [Weapons.GO_CART, Weapons.MUSHROOM, Locations.CASTLE, Locations.TRACK],
+        Weapons.GO_CART: [Suspects.MARIO, Suspects.LUIGI, Locations.CASTLE, Locations.TRACK],
+        Weapons.MUSHROOM: [Suspects.MARIO, Suspects.LUIGI, Locations.CASTLE, Locations.TRACK],
+        Locations.CASTLE: [Suspects.MARIO,Suspects.LUIGI,Weapons.GO_CART,Weapons.MUSHROOM],
+        Locations.TRACK: [Suspects.MARIO,Suspects.LUIGI,Weapons.GO_CART,Weapons.MUSHROOM],
     }
+    # fmt: on
 
 
 def test_remove_other_topics_at_owner():
