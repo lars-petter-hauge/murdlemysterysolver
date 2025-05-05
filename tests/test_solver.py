@@ -101,33 +101,31 @@ def test_remove_other_topics_at_owner_with_unrelated_options():
     }
 
 
-@pytest.mark.skip(reason="unfinished test..")
 def test_fix_mutually_exclusive_options():
     Suspects = StrEnum("Suspects", ["MARIO", "LUIGI"])
     Weapons = StrEnum("Weapons", ["GO_CART", "MUSHROOM"])
     Locations = StrEnum("Locations", ["CASTLE", "TRACK"])
 
-    # We create a case where for both Mario and Castle only has a single weapons option: go_cart
-    # This means that they are also mutually exclusive. Remove the other locations and suspects
+    # We create a case where for mario has two options specified: GO_CART and CASTLE
+    # This means that they are also mutually exclusive. For each of GO_CART and CASTLE,
+    # remove the other options
     combinations = {
-        Suspects.MARIO: [Weapons.GO_CART, Locations.CASTLE, Locations.TRACK],
+        Suspects.MARIO: [Weapons.GO_CART, Locations.CASTLE],
         Weapons.GO_CART: [
             Suspects.MARIO,
-            Suspects.LUIGI,
             Locations.CASTLE,
             Locations.TRACK,
         ],
-        Locations.CASTLE: [Suspects.MARIO, Suspects.LUIGI, Weapons.GO_CART],
+        Locations.CASTLE: [Suspects.MARIO, Weapons.GO_CART, Weapons.MUSHROOM],
     }
     _fix_mutually_exclusive_options(combinations)
 
+    # Ensure that GO_CART can only be at CASTLE and vice versa
     assert combinations == {
         Suspects.MARIO: [Weapons.GO_CART, Locations.CASTLE],
         Weapons.GO_CART: [
             Suspects.MARIO,
-            Suspects.LUIGI,
             Locations.CASTLE,
-            Locations.TRACK,
         ],
         Locations.CASTLE: [Suspects.MARIO, Weapons.GO_CART],
     }
