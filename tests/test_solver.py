@@ -126,7 +126,7 @@ def test_remove_topic_from_other_owners():
     # fmt: on
 
 
-def test_solve():
+def test_first_challenge():
     # Lets test with the first challenge of the book
     Suspects = StrEnum(
         "Suspects", ["MISS_SAFFRON", "GENERAL_COFFEE", "GRANDMASTER_ROSE"]
@@ -147,7 +147,7 @@ def test_solve():
             ("RED_HERRING", "a red herring"),
         ],
     )
-    TEST_INPUT = [Suspects, Locations, Weapons]
+    TEST_INPUT = [Suspects, Weapons, Locations]
     FACTS = [
         {Suspects.GENERAL_COFFEE: [Locations.STORAGE_ROOM]},
         {
@@ -159,6 +159,13 @@ def test_solve():
         {Weapons.MURDLE_BOOK: [Locations.STORAGE_ROOM, Locations.ROOFTOP]},
         {Suspects.MISS_SAFFRON: [Weapons.MAGNIFYING_GLASS]},
     ]
+    should_contain = {
+        Suspects.GRANDMASTER_ROSE: [Weapons.RED_HERRING, Locations.CONSPIRACY_ROOM],
+        Suspects.GENERAL_COFFEE: [Weapons.MURDLE_BOOK, Locations.STORAGE_ROOM],
+        Suspects.MISS_SAFFRON: [Weapons.MAGNIFYING_GLASS, Locations.ROOFTOP],
+    }
 
-    # todo, actually assert....
-    solve(TEST_INPUT, FACTS)
+    result = solve(TEST_INPUT, FACTS)
+    for key, value in should_contain.items():
+        assert result[key] == value
+
