@@ -1,5 +1,4 @@
 from enum import StrEnum
-import pytest
 
 from murdle_solver.main import (
     solve,
@@ -103,9 +102,28 @@ def test_fix_mutually_exclusive_options():
     }
 
 
-@pytest.mark.skip(reason="unfinished test..")
 def test_remove_topic_from_other_owners():
-    _remove_topic_from_other_owners()
+    Suspects = StrEnum("Suspects", ["MARIO", "LUIGI", "BOWSER"])
+    Weapons = StrEnum("Weapons", ["GO_CART", "MUSHROOM", "HAMMER"])
+    Locations = StrEnum("Locations", ["CASTLE", "TRACK", "PIT"])
+
+    # fmt: off
+    combinations = {
+        Suspects.MARIO: [Weapons.GO_CART, Locations.CASTLE, Locations.TRACK, Locations.PIT],
+        Suspects.LUIGI: [Weapons.GO_CART, Weapons.MUSHROOM, Weapons.HAMMER, Locations.CASTLE, Locations.TRACK, Locations.PIT],
+        Suspects.BOWSER: [Weapons.GO_CART, Weapons.MUSHROOM, Weapons.HAMMER, Locations.CASTLE, Locations.TRACK, Locations.PIT],
+    }
+    # fmt: on
+    _remove_topic_from_other_owners(combinations, Suspects.MARIO, Weapons.GO_CART)
+
+    # Ensure that GO_CART has been removed from the other suspects
+    # fmt: off
+    assert combinations == {
+        Suspects.MARIO: [Weapons.GO_CART, Locations.CASTLE, Locations.TRACK, Locations.PIT],
+        Suspects.LUIGI: [Weapons.MUSHROOM, Weapons.HAMMER, Locations.CASTLE, Locations.TRACK, Locations.PIT],
+        Suspects.BOWSER: [Weapons.MUSHROOM, Weapons.HAMMER, Locations.CASTLE, Locations.TRACK, Locations.PIT],
+    }
+    # fmt: on
 
 
 def test_solve():
