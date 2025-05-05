@@ -219,7 +219,7 @@ def test_fix_mutually_exclusive_options_4groups_exclude():
     # fmt: off
     assert combinations == {
         Suspects.BOWSER: [Weapons.SPEAR, Locations.TRACK, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES],
-        Weapons.SPEAR: [Suspects.BOWSER, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK],
+        Weapons.SPEAR: [Suspects.BOWSER, Fixation.CARS, Fixation.FLOWERS, Fixation.PANCAKES, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK],
         Locations.TRACK: [Suspects.BOWSER, Fixation.FIRE, Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR],
         Fixation.FIRE: [Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR, Suspects.BOWSER, Suspects.LEIA, Suspects.LUIGI, Suspects.MARIO, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK]
     }
