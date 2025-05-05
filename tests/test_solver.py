@@ -171,6 +171,61 @@ def test_first_challenge():
         assert result[key] == value
 
 
+def test_fix_mutually_exclusive_options_4groups():
+    Suspects = StrEnum("Suspects", ["MARIO", "LUIGI", "BOWSER", "LEIA"])
+    Weapons = StrEnum("Weapons", ["GO_CART", "MUSHROOM", "HAMMER", "SPEAR"])
+    Locations = StrEnum("Locations", ["CASTLE", "TRACK", "PIT", "FARM"])
+    Fixation = StrEnum("Fixation", ["FLOWERS", "FIRE", "CARS", "PANCAKES"])
+
+    # fmt: off
+    combinations = {
+        Suspects.BOWSER: [Weapons.SPEAR, Locations.TRACK, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES],
+        Weapons.SPEAR: [Suspects.BOWSER, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK],
+        Locations.TRACK: [Suspects.BOWSER, Fixation.FIRE, Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR],
+        Fixation.FIRE: [Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR, Suspects.BOWSER, Suspects.LEIA, Suspects.LUIGI, Suspects.MARIO, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK]
+    }
+    # fmt: on
+    _remove_topic_from_other_owners(combinations, Suspects.MARIO, Weapons.GO_CART)
+
+    # Ensure that fixation FIRE has been selected for weapon spear
+    # fmt: off
+    assert combinations == {
+        Suspects.BOWSER: [Weapons.SPEAR, Locations.TRACK, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES],
+        Weapons.SPEAR: [Suspects.BOWSER, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK],
+        Locations.TRACK: [Suspects.BOWSER, Fixation.FIRE, Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR],
+        Fixation.FIRE: [Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR, Suspects.BOWSER, Suspects.LEIA, Suspects.LUIGI, Suspects.MARIO, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK]
+    }
+    # fmt: on
+
+
+@pytest.mark.xfail
+def test_fix_mutually_exclusive_options_4groups_exclude():
+    Suspects = StrEnum("Suspects", ["MARIO", "LUIGI", "BOWSER", "LEIA"])
+    Weapons = StrEnum("Weapons", ["GO_CART", "MUSHROOM", "HAMMER", "SPEAR"])
+    Locations = StrEnum("Locations", ["CASTLE", "TRACK", "PIT", "FARM"])
+    Fixation = StrEnum("Fixation", ["FLOWERS", "FIRE", "CARS", "PANCAKES"])
+
+    # fmt: off
+    combinations = {
+        Suspects.BOWSER: [Weapons.SPEAR, Locations.TRACK, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES],
+        Weapons.SPEAR: [Suspects.BOWSER, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK],
+        Locations.TRACK: [Suspects.LEIA, Suspects.LUIGI, Suspects.MARIO, Fixation.FIRE, Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR],
+        Fixation.FIRE: [Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR, Suspects.BOWSER, Suspects.LEIA, Suspects.LUIGI, Suspects.MARIO, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK]
+    }
+    # fmt: on
+    _remove_topic_from_other_owners(combinations, Suspects.MARIO, Weapons.GO_CART)
+
+    # Ensure that fixation FIRE has been removed for weapon spear
+    # fmt: off
+    assert combinations == {
+        Suspects.BOWSER: [Weapons.SPEAR, Locations.TRACK, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES],
+        Weapons.SPEAR: [Suspects.BOWSER, Fixation.CARS, Fixation.FIRE, Fixation.FLOWERS, Fixation.PANCAKES, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK],
+        Locations.TRACK: [Suspects.BOWSER, Fixation.FIRE, Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR],
+        Fixation.FIRE: [Weapons.GO_CART, Weapons.HAMMER, Weapons.MUSHROOM, Weapons.SPEAR, Suspects.BOWSER, Suspects.LEIA, Suspects.LUIGI, Suspects.MARIO, Locations.CASTLE, Locations.FARM, Locations.PIT, Locations.TRACK]
+    }
+    # fmt: on
+
+
 @pytest.mark.xfail
 def test_solve_four_groups():
     # Add a test that solves when the fourth group is added.
