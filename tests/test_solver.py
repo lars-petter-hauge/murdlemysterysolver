@@ -1,4 +1,5 @@
 from enum import StrEnum
+import pytest
 
 from murdle_solver.main import (
     solve,
@@ -169,3 +170,59 @@ def test_first_challenge():
     for key, value in should_contain.items():
         assert result[key] == value
 
+
+@pytest.mark.xfail
+def test_solve_four_groups():
+    # Add a test that solves when the fourth group is added.
+    # Challenge 51
+    Suspects = StrEnum(
+        "Suspects",
+        ["CRYSTAL_GODDESS", "SEASHELL_DDS", "HERBALIST_ONYX", "SUPREME_MASTER_COBALT"],
+    )
+    Locations = StrEnum(
+        "Locations",
+        [
+            "THE_ROOF",
+            "THE_GROUNDS",
+            "ISOLATION_CHAMBER",
+            "ACTUAL_LABORATORY",
+        ],
+    )
+    Weapons = StrEnum(
+        "Weapons",
+        [
+            "CHANNELED_TEXT",
+            "DOWSING_ROD",
+            "PSEUDO_SCIENTIFIC_APPARATUS",
+            "HYPNOTIC_WATCH",
+        ],
+    )
+    Experiments = StrEnum(
+        "Experiments",
+        ["TELEKINESIS", "AURA_READING", "CONTROL_GROUP", "FORTUNE_TELLING"],
+    )
+
+    TEST_INPUT = [Suspects, Weapons, Locations, Experiments]
+
+    # fmt: off
+    FACTS = [
+        {Suspects.SUPREME_MASTER_COBALT:[Locations.ACTUAL_LABORATORY]},
+        {Suspects.CRYSTAL_GODDESS: [Weapons.PSEUDO_SCIENTIFIC_APPARATUS]},
+        {Suspects.HERBALIST_ONYX: [Weapons.CHANNELED_TEXT]},
+        {Weapons.DOWSING_ROD: [Experiments.AURA_READING, Experiments.FORTUNE_TELLING, Experiments.TELEKINESIS]},
+        {Experiments.FORTUNE_TELLING: [Locations.ISOLATION_CHAMBER]},
+        {Weapons.PSEUDO_SCIENTIFIC_APPARATUS: [Experiments.TELEKINESIS]},
+        {Weapons.HYPNOTIC_WATCH: [Suspects.CRYSTAL_GODDESS, Suspects.SUPREME_MASTER_COBALT]},
+        {Suspects.SEASHELL_DDS: [Locations.THE_GROUNDS]},
+    ]
+    should_contain = {
+        Suspects.CRYSTAL_GODDESS: [Weapons.PSEUDO_SCIENTIFIC_APPARATUS, Locations.THE_ROOF, Experiments.TELEKINESIS],
+        Suspects.SEASHELL_DDS: [Weapons.DOWSING_ROD, Locations.THE_GROUNDS, Experiments.AURA_READING],
+        Suspects.HERBALIST_ONYX: [Weapons.CHANNELED_TEXT, Locations.ISOLATION_CHAMBER, Experiments.FORTUNE_TELLING],
+        Suspects.SUPREME_MASTER_COBALT:[Weapons.HYPNOTIC_WATCH, Locations.ACTUAL_LABORATORY, Experiments.CONTROL_GROUP],
+    }
+    # fmt: on
+
+    result = solve(TEST_INPUT, FACTS)
+    for key, value in should_contain.items():
+        assert result[key] == value
